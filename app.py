@@ -37,6 +37,17 @@ ca_par_region = (
     .sort_values("ca", ascending=False)
 )
 
+stats = df.groupby("produit").agg(
+    moyenne_ca=("ca", "mean"),
+    mediane_ca=("ca", "median"),
+    moyenne_qte=("qte", "mean"),
+    mediane_qte=("qte", "median"),
+    ecart_type_qte=("qte", "std"),
+    variance_qte=("qte", "var")
+).round(2)
+
+
+
 print("Chiffre d'affaires total :", ca_total)
 print("\nVentes par produit :")
 print(ventes_par_produit.to_string(index=False))
@@ -46,8 +57,7 @@ print("\nVentes par région :")
 print(ventes_par_region.to_string(index=False))
 print("\nChiffre d'affaires par région :")
 print(ca_par_region.to_string(index=False))
-
-
+print(stats)
 ventes_natives = {}
 
 with urllib.request.urlopen(URL) as response:
@@ -65,7 +75,6 @@ produit_moins_vendu = min(ventes_natives, key=ventes_natives.get)
 print("\nProduit le plus vendu :", produit_plus_vendu, "-", ventes_natives[produit_plus_vendu], "unités")
 print("Produit le moins vendu :", produit_moins_vendu, "-", ventes_natives[produit_moins_vendu], "unités")
 
-
 fig_ventes_produit = px.bar(
     ventes_par_produit,
     x="produit",
@@ -78,7 +87,6 @@ fig_ventes_produit = px.bar(
 fig_ventes_produit.update_traces(textposition="outside")
 fig_ventes_produit.write_html("ventes-par-produit.html")
 
-
 fig_ca_produit = px.bar(
     ca_par_produit,
     x="produit",
@@ -90,7 +98,6 @@ fig_ca_produit = px.bar(
 
 fig_ca_produit.update_traces(textposition="outside")
 fig_ca_produit.write_html("ca-par-produit.html")
-
 
 print("\nFichiers générés :")
 print("- ventes-par-produit.html")
